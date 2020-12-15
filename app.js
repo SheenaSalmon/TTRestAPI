@@ -3,14 +3,18 @@
 // load modules
 const express = require('express');
 const morgan = require('morgan');
+const routes=require('./routes');
 
 // variable to enable global error logging
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
 
 // create the Express app
 const app = express();
+app.use(express.json());
+app.use('/api', routes);
 
-const sequelize=require('./models').sequelize
+// const sequelize=require('./models').sequelize;
+const { sequelize, User, Course} =require('./models');
 
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
@@ -53,6 +57,17 @@ const server = app.listen(app.get('port'), () => {
   try {
     await sequelize.authenticate();
     console.log('Connection to the database successful!');
+    const users = await User.findAll(
+
+      {
+        include:[
+        {model:Course,
+        as:'Courses'}
+        ]
+      }
+    );
+    
+    console.log(JSON.stringify(users,null,2))
 
   }
   catch(error){
@@ -62,3 +77,4 @@ const server = app.listen(app.get('port'), () => {
 }
 )();
 
+//TEST RELATIONSHIP
