@@ -1,6 +1,7 @@
 'use strict'
 
 const Sequelize = require('sequelize');
+const bcrypt =require('bcrypt');
 
 
 module.exports=(sequelize) =>
@@ -61,9 +62,28 @@ module.exports=(sequelize) =>
                     notEmpty:{
                         msg:"You must include a password."
 
-                    }
+                    },
+              
                 }
-            }
+            },
+            // confirmedPassword:{
+            //     type: Sequelize.STRING,
+            //     allowNull: false,
+            //     set(val)
+            //     {
+            //         if(val=== this.password)
+            //         {
+            //             const hashedPassword = bcrypt.hashSync(val,10);
+            //             this.setDataValue('confirmedPassword', hashedPassword);
+            //         }
+            //     },
+            //     validate:
+            //     {
+            //         notNull:{
+            //             msg: "The passwords do not match.  Please try again."
+            //         }
+            //     }
+            // }
         },{sequelize}
     );
 

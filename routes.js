@@ -1,7 +1,7 @@
 const express =require('express');
 const router = express.Router();
 const { sequelize, User, Course} =require('./models');
-
+const bcrypt =require('bcrypt');
 const asyncHandler=(cb)=>
 {
     return async (req,res,next) =>
@@ -25,10 +25,40 @@ router.get('/users', asyncHandler( async (req,res)=>{
 //Creat a new user return 201 status code, set location header to "/"
 router.post('/users', asyncHandler( async (req,res) =>
 {
+    
     try {
+        const errors=[];
         console.log(req.body);
-        await User.create(req.body);
-        res.status(201).redirect('/');
+        const user =req.body;
+        if(!user.firstName)
+        {
+            errors.push("Please provide a firstName")
+        }
+
+        if(!user.lastName)
+        {
+            errors.push("Please provide a lastName")
+        }
+        if(!user.emailAddress)
+        {
+            errors.push("Please an Email Address")
+        }
+
+        let password =user.password;
+        if(!password)
+        {
+            errors.push("Please enter a password for the account.")
+        }
+        else
+        {user.password =bcrypt.hashSync(password,10);}
+
+        if(errors.length > 0)
+        {
+            res.status(400).json({errors});
+        }
+        else
+       { await User.create(user);
+        res.redirect(201,'/');}
 
     }
     catch(error)
