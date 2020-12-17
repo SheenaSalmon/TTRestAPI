@@ -2,7 +2,7 @@ const express =require('express');
 const router = express.Router();
 const { sequelize, User, Course} =require('./models');
 const bcrypt =require('bcrypt');
-// const course = require('./models/course');
+
 const { authenticateUser} = require('./middleware/auth-user');
 const asyncHandler=(cb)=>
 {
@@ -22,12 +22,12 @@ const asyncHandler=(cb)=>
 router.get('/users', authenticateUser,asyncHandler( async (req,res)=>{
     const user = req.currenUser;
     console.log(user);
-    let users= await User.findAll();
+    let users= await User.findAll( {attributes : {exclude: ['password', 'createdAt','updatedAt']}});
 
     res.status(200).json(users);
 }));
 
-//Creat a new user return 201 status code, set location header to "/"
+//Creates a new user return 201 status code, set location header to "/"
 router.post('/users', asyncHandler( async (req,res) =>
 {
     
@@ -90,9 +90,15 @@ router.get('/courses', asyncHandler( async (req,res)=>
     let courses = await Course.findAll({
         include:[
             {
-                model:User, 
+                model:User,attributes:{
+                   exclude: ['password', 'createdAt','updatedAt']
+            
             }
+            },
+
         ]
+        ,
+        attributes : {exclude: ['password', 'createdAt','updatedAt']}
     });
     res.status(200).json(courses);
 }));
