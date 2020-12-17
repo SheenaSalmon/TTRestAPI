@@ -2,6 +2,8 @@ const express =require('express');
 const router = express.Router();
 const { sequelize, User, Course} =require('./models');
 const bcrypt =require('bcrypt');
+// const course = require('./models/course');
+const { authenticateUser} = require('./middleware/auth-user');
 const asyncHandler=(cb)=>
 {
     return async (req,res,next) =>
@@ -17,8 +19,11 @@ const asyncHandler=(cb)=>
 }
 
 //return currently authenicated user with 200 HTPP status code
-router.get('/users', asyncHandler( async (req,res)=>{
+router.get('/users', authenticateUser,asyncHandler( async (req,res)=>{
+    const user = req.currenUser;
+    console.log(user);
     let users= await User.findAll();
+
     res.status(200).json(users);
 }));
 
@@ -101,12 +106,68 @@ router.get('/courses/:id', asyncHandler( async (req, res) =>
 }) );
 
 // Creates a new course
-router.post('/courses');
+router.post('/courses', authenticateUser,asyncHandler( async (req, res) =>
+{
+    const course=req.body;
+    const errors =[];
+    if(!course.title)
+    {
+        errors.push("Please provide a title for the course");
+    }
+
+    if(! course.description)
+        {
+            errors.push('Please Provide a Description for the course');
+
+    }
+
+    if(errors.length >0)
+    {
+        res.status(400).json({errors});
+    }
+    else
+    {
+        await Course.create(course);
+        res.redirect('/courses/:id',201);
+    }
+}));
 
 //Update the course with the id
-router.put('/courses/:id');
+router.put('/courses/:id', authenticateUser,asyncHandler( async (req,res) =>
+{
+    const course=await Course.findByPk(req.params.id);
+    const errors =[];
+    if(!course.title)
+    {
+        errors.push("Please provide a title for the course");
+    }
+
+    if(! course.description)
+        {
+            errors.push('Please Provide a Description for the course');
+
+    }
+
+    if(errors.length >0)
+    {
+        res.status(400).json({errors});
+    }
+    else
+    {
+        await course.update(req.body);
+        res.redirect('/courses/:id',204);
+    }
+   
+}));
 
 //Delete the course witht this id
-router.delete('/courses/:id');
+router.delete('/courses/:id',authenticateUser ,asyncHandler( async (req, res) => {
+    const course=await Course.findByPk(req.params.id);
+    if(course)
+    {
+        await course.destroy();
+        res.status(204).end();
+    }
+}));
 
 module.exports = router;

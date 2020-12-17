@@ -66,24 +66,7 @@ module.exports=(sequelize) =>
               
                 }
             },
-            // confirmedPassword:{
-            //     type: Sequelize.STRING,
-            //     allowNull: false,
-            //     set(val)
-            //     {
-            //         if(val=== this.password)
-            //         {
-            //             const hashedPassword = bcrypt.hashSync(val,10);
-            //             this.setDataValue('confirmedPassword', hashedPassword);
-            //         }
-            //     },
-            //     validate:
-            //     {
-            //         notNull:{
-            //             msg: "The passwords do not match.  Please try again."
-            //         }
-            //     }
-            // }
+         
         },{sequelize}
     );
 
