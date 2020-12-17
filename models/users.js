@@ -1,7 +1,7 @@
 'use strict'
 
 const Sequelize = require('sequelize');
-const bcrypt =require('bcrypt');
+
 
 
 module.exports=(sequelize) =>
