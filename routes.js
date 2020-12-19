@@ -20,11 +20,13 @@ const asyncHandler=(cb)=>
 
 //return currently authenicated user with 200 HTPP status code
 router.get('/users', authenticateUser,asyncHandler( async (req,res)=>{
-    const user = req.currenUser;
+    const user = req.currentUser;
     console.log(user);
+    currentUser = await User.findByPk(user.dataValues.id);
+
     let users= await User.findAll( {attributes : {exclude: ['password', 'createdAt','updatedAt']}});
 
-    res.status(200).json(users);
+    res.status(200).json(currentUser);
 }));
 
 //Creates a new user return 201 status code, set location header to "/"
