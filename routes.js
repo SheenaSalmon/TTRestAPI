@@ -131,12 +131,12 @@ router.post('/courses', authenticateUser,asyncHandler( async (req, res) =>
 
     if(errors.length >0)
     {
-        res.status(400).json({errors});
+        res.status(400).json({errors}).end();
     }
     else
     {
-        await Course.create(course);
-        res.redirect('/courses/:id',201);
+         const newCourse = await Course.create(course);
+        res.redirect(`/courses/${newCourse.id}`,201);
     }
 }));
 
@@ -144,13 +144,17 @@ router.post('/courses', authenticateUser,asyncHandler( async (req, res) =>
 router.put('/courses/:id', authenticateUser,asyncHandler( async (req,res) =>
 {
     const course=await Course.findByPk(req.params.id);
+    console.log(course);
     const errors =[];
-    if(!course.title)
+    console.log(req.body);
+    const updateCourse=req.body;
+    console.log(`The Updated Course: ${updateCourse.description}`);
+    if(!updateCourse.title)
     {
         errors.push("Please provide a title for the course");
     }
 
-    if(! course.description)
+    if(!updateCourse.description)
         {
             errors.push('Please Provide a Description for the course');
 
@@ -163,7 +167,7 @@ router.put('/courses/:id', authenticateUser,asyncHandler( async (req,res) =>
     else
     {
         await course.update(req.body);
-        res.redirect('/courses/:id',204);
+        res.redirect(204,'/courses/:id');
     }
    
 }));
