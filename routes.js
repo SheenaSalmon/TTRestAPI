@@ -21,10 +21,9 @@ const asyncHandler=(cb)=>
 //return currently authenicated user with 200 HTPP status code
 router.get('/users', authenticateUser,asyncHandler( async (req,res)=>{
     const user = req.currentUser;
-    console.log(user);
+   
     currentUser = await User.findByPk(user.dataValues.id);
 
-    let users= await User.findAll( {attributes : {exclude: ['password', 'createdAt','updatedAt']}});
 
     res.status(200).json(currentUser);
 }));
@@ -144,11 +143,11 @@ router.post('/courses', authenticateUser,asyncHandler( async (req, res) =>
 router.put('/courses/:id', authenticateUser,asyncHandler( async (req,res) =>
 {
     const course=await Course.findByPk(req.params.id);
-    console.log(course);
+   
     const errors =[];
-    console.log(req.body);
+    
     const updateCourse=req.body;
-    console.log(`The Updated Course: ${updateCourse.description}`);
+    
     if(!updateCourse.title)
     {
         errors.push("Please provide a title for the course");
